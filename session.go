@@ -190,15 +190,18 @@ func (s *Session) Set(key string, value interface{}) {
 	if s.Keys == nil {
 		s.Keys = make(map[string]interface{})
 	}
-
+	s.rwmutex.Lock()
 	s.Keys[key] = value
+	s.rwmutex.Unlock()
 }
 
 // Get returns the value for the given key, ie: (value, true).
 // If the value does not exists it returns (nil, false)
 func (s *Session) Get(key string) (value interface{}, exists bool) {
 	if s.Keys != nil {
+		s.rwmutex.Lock()
 		value, exists = s.Keys[key]
+		s.rwmutex.Unlock()
 	}
 
 	return
