@@ -2,6 +2,7 @@ package melody
 
 import (
 	"errors"
+	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -21,6 +22,12 @@ type Session struct {
 }
 
 func (s *Session) writeMessage(message *envelope) {
+	defer func() {
+		if recover() != nil {
+			log.Println("melody session output channel has been close! 請調整你的程式，先判斷session IsClose()")
+		}
+	}()
+
 	if s.closed() {
 		s.melody.errorHandler(s, errors.New("tried to write to closed a session"))
 		return
